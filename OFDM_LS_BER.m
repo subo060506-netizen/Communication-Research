@@ -5,7 +5,7 @@
 %Yp​[k]=H[k]Xp​[k]+W[k]
 %Y[k]≈X[k]H^[k]
 %误差J=∣Y[k]−Xp[k]H^[k]∣^2
-%求极值，取|Xp(k)|=1,H^[k]=Yp[k]/Xp[k]
+%求极值，H^[k]=Yp[k]/Xp[k]
 %取Xp(k)=1,H^(k)=Yp(k)
 SNR=0:2:50;
 BER=zeros(length(SNR),1);
