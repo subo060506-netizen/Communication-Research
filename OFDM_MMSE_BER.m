@@ -12,7 +12,7 @@
 % ZF：G^ZF[K]=1/H[k]    MMSE：G^MMSE[K]
 %信噪比高时H*[k] / |H[k]|^2=1/H[k],MMSE->LS,噪声影响忽略，只消除信道影响
 %H[k]->0,G^MMSE=σx^2/σw^2=SNR,信噪比低时，抑制噪声增强，但信道影响无法消除
-SNR=0:2:20;
+SNR=0:2:30;
 BER_ZF=zeros(length(SNR),1);
 BER_MMSE=zeros(length(SNR),1);
 numBits=2^20;
