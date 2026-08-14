@@ -28,6 +28,7 @@ ofdmModOut = [cp;ifftModOut];%注意
 ofdmModOut = ofdmModOut(:);%实际 OFDM 信号应该是串行的
 mpChan=[0,0.1,0.6,0.5,0.8]';
 mpChanOut=filter(mpChan,1,ofdmModOut);
+
 qamPower = mean(abs(qamModOut(:)).^2);
 MSE_ZF = zeros(length(SNR),1);
 MSE_MMSE = zeros(length(SNR),1);
