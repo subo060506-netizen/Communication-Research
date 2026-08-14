@@ -14,7 +14,7 @@ modOrder=16;
 numCarr=64;
 cycPrefLen=5;
 qamModOut=qammod(srcBits,modOrder,InputType="bit");
-pilot=sqrt(10)*ones(numCarr,1);%H^ls=H+​W/Xp,Xp[k]=1功率过小，导致噪声项过大
+pilot=sqrt(10)*ones(numCarr,1);%H^ls=H+​W/Xp,Xp[k]=1功率过小，信噪比过大，导致噪声项过大，信道估计有误差
 %sqrt(10)使|Xk|^2=10,为16QAM符号平均功率
 qamModOut = reshape(qamModOut,numCarr,[]);
 qamModOut=[pilot qamModOut];
