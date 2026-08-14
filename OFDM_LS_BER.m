@@ -43,7 +43,7 @@ xlabel("SNR(dB)")
 ylabel("BER")
 title("OFDM BER Performance with LS Channel Estimation and ZF Equalization");
 scatterplot(eqOut(:));
-%LS 信道估计的误差与 Pilot 的信噪比直接相关。LS 在低 SNR 下不够好
+%LS 信道估计的误差与 Pilot 的信噪比直接相关。LS 在低信噪比下不够好
 %对比曲线：∣H[k]∣和|H^LS[k]|
 % Htrue=fft(mpChan,numCarr);
 % figure;
