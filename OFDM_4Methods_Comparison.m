@@ -20,7 +20,7 @@ ifftModOut=ifft(qamModOut,numCarr);
 cp = ifftModOut(end-cycPrefLen+1:end,:);
 ofdmModOut = [cp;ifftModOut];%注意
 ofdmModOut = ofdmModOut(:);%实际 OFDM 信号应该是串行的
-mpChan=[0,0.1,0.6,0.5,0.8]';
+mpChan=[1,-0.95]';
 mpChanOut=filter(mpChan,1,ofdmModOut);
 Hhat=zeros(numCarr,length(SNR));
 Htrue=fft(mpChan,numCarr);
@@ -76,3 +76,10 @@ xlabel("SNR(dB)");
 ylabel("BER");
 title("OFDM BER Performance: ZF vs MMSE vs LS_ZF vs LS_MMSE");
 hold off
+
+figure;
+plot(abs(Htrue),"o-");
+grid on;
+xlabel("Subcarrier");
+ylabel("|H[k]|");
+title("Channel Frequency Response");
