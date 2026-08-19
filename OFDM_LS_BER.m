@@ -26,17 +26,17 @@ ofdmModOut = ofdmModOut(:);%实际 OFDM 信号应该是串行的
 mpChan=[0,0.1,0.6,0.5,0.8]';
 mpChanOut=filter(mpChan,1,ofdmModOut);
 for i=1:length(SNR)
-snr=SNR(i);
-chanOut=awgn(mpChanOut,snr,"measured");
-rx = reshape(chanOut,numCarr+cycPrefLen,[]);
-rxNoCP = rx(cycPrefLen+1:end,:);
-fftModOut=fft(rxNoCP,numCarr,1);
-pilotRx =fftModOut(:,1);
-Hhat = pilotRx ./ pilot;%存在信道估计误差
-fftModOut=fftModOut(:,2:end);
-eqOut=fftModOut./Hhat;
-qamdeModOut=qamdemod(eqOut,modOrder,OutputType="bit");
-BER(i)=nnz(qamdeModOut(:)~=srcBits)/numBits;
+    snr=SNR(i);
+    chanOut=awgn(mpChanOut,snr,"measured");
+    rx = reshape(chanOut,numCarr+cycPrefLen,[]);
+    rxNoCP = rx(cycPrefLen+1:end,:);
+    fftModOut=fft(rxNoCP,numCarr,1);
+    pilotRx =fftModOut(:,1);
+    Hhat = pilotRx ./ pilot;%存在信道估计误差
+    fftModOut=fftModOut(:,2:end);
+    eqOut=fftModOut./Hhat;
+    qamdeModOut=qamdemod(eqOut,modOrder,OutputType="bit");
+    BER(i)=nnz(qamdeModOut(:)~=srcBits)/numBits;
 end
 semilogy(SNR,BER,"o-")%在 x 轴上使用线性刻度、在 y 轴上使用以 10 为底的对数刻度来绘制 x 和 y 坐标
 xlabel("SNR(dB)")
