@@ -26,42 +26,42 @@ Hhat=zeros(numCarr,length(SNR));
 Htrue=fft(mpChan,numCarr);
 
 for i=1:length(SNR)
-snr=SNR(i);
-% Calculate noise power
-snrLinear = 10^(snr/10);
-noiseVarFreq = qamPower / snrLinear;
-noiseVarTime = noiseVarFreq / numCarr;
-%Generate complex AWGN
-noise = sqrt(noiseVarTime/2) * (randn(size(mpChanOut)) + 1j*randn(size(mpChanOut)));
-chanOut=mpChanOut+noise;
+    snr=SNR(i);
+    % Calculate noise power
+    snrLinear = 10^(snr/10);
+    noiseVarFreq = qamPower / snrLinear;
+    noiseVarTime = noiseVarFreq / numCarr;
+    %Generate complex AWGN
+    noise = sqrt(noiseVarTime/2) * (randn(size(mpChanOut)) + 1j*randn(size(mpChanOut)));
+    chanOut=mpChanOut+noise;
 
-rx = reshape(chanOut,numCarr+cycPrefLen,[]);
-rxNoCP = rx(cycPrefLen+1:end,:);
-fftModOut=fft(rxNoCP,numCarr,1);
-pilotRx =fftModOut(:,1);
-fftModOut=fftModOut(:,2:end);
-Hhat(:,i) = pilotRx ./ pilot;%存在信道估计误差
+    rx = reshape(chanOut,numCarr+cycPrefLen,[]);
+    rxNoCP = rx(cycPrefLen+1:end,:);
+    fftModOut=fft(rxNoCP,numCarr,1);
+    pilotRx =fftModOut(:,1);
+    fftModOut=fftModOut(:,2:end);
+    Hhat(:,i) = pilotRx ./ pilot;%存在信道估计误差
 
-eqOut_ZF=fftModOut./Htrue;
-qamdeModOut_ZF=qamdemod(eqOut_ZF,modOrder,OutputType="bit");
-BER_ZF(i)=nnz(qamdeModOut_ZF(:)~=srcBits)/numBits;
+    eqOut_ZF=fftModOut./Htrue;
+    qamdeModOut_ZF=qamdemod(eqOut_ZF,modOrder,OutputType="bit");
+    BER_ZF(i)=nnz(qamdeModOut_ZF(:)~=srcBits)/numBits;
 
-eqOut_LS_ZF=fftModOut./Hhat(:,i);
-qamdeModOut_LS_ZF=qamdemod(eqOut_LS_ZF,modOrder,OutputType="bit");
-BER_LS_ZF(i)=nnz(qamdeModOut_LS_ZF(:)~=srcBits)/numBits;
+    eqOut_LS_ZF=fftModOut./Hhat(:,i);
+    qamdeModOut_LS_ZF=qamdemod(eqOut_LS_ZF,modOrder,OutputType="bit");
+    BER_LS_ZF(i)=nnz(qamdeModOut_LS_ZF(:)~=srcBits)/numBits;
 
-noiseVarRatio=1/snrLinear ;
+    noiseVarRatio=1/snrLinear ;
 
-mmseWeight = conj(Htrue) ./ (abs(Htrue).^2 + noiseVarRatio);
-eqOut_MMSE=fftModOut.*mmseWeight;
-qamdeModOut_MMSE=qamdemod(eqOut_MMSE,modOrder,OutputType="bit");
-BER_MMSE(i)=nnz(qamdeModOut_MMSE(:)~=srcBits)/numBits;
+    mmseWeight = conj(Htrue) ./ (abs(Htrue).^2 + noiseVarRatio);
+    eqOut_MMSE=fftModOut.*mmseWeight;
+    qamdeModOut_MMSE=qamdemod(eqOut_MMSE,modOrder,OutputType="bit");
+    BER_MMSE(i)=nnz(qamdeModOut_MMSE(:)~=srcBits)/numBits;
 
 
-mmseWeight_LS = conj(Hhat(:,i)) ./ (abs(Hhat(:,i)).^2 + noiseVarRatio);
-eqOut_LS_MMSE=fftModOut.*mmseWeight_LS;
-qamdeModOut_LS_MMSE=qamdemod(eqOut_LS_MMSE,modOrder,OutputType="bit");
-BER_LS_MMSE(i)=nnz(qamdeModOut_LS_MMSE(:)~=srcBits)/numBits;
+    mmseWeight_LS = conj(Hhat(:,i)) ./ (abs(Hhat(:,i)).^2 + noiseVarRatio);
+    eqOut_LS_MMSE=fftModOut.*mmseWeight_LS;
+    qamdeModOut_LS_MMSE=qamdemod(eqOut_LS_MMSE,modOrder,OutputType="bit");
+    BER_LS_MMSE(i)=nnz(qamdeModOut_LS_MMSE(:)~=srcBits)/numBits;
 end
 hold on
 semilogy(SNR,BER_ZF,"o-r");%在 x 轴上使用线性刻度、在 y 轴上使用以 10 为底的对数刻度来绘制 x 和 y 坐标
