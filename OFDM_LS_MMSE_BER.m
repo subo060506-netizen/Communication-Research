@@ -39,34 +39,35 @@ ofdmModOut = [cp;ifftModOut];%注意
 ofdmModOut = ofdmModOut(:);%实际 OFDM 信号应该是串行的
 mpChan=[0,0.1,0.6,0.5,0.8]';
 mpChanOut=filter(mpChan,1,ofdmModOut);
+Htrue=fft(mpChan,numCarr);
 Hhat=zeros(numCarr,length(SNR));
 for i=1:length(SNR)
-snr=SNR(i);
-% Calculate noise power
-snrLinear = 10^(snr/10);
-noiseVarFreq = qamPower / snrLinear;
-noiseVarTime = noiseVarFreq / numCarr;
-%Generate complex AWGN
-noise = sqrt(noiseVarTime/2) * (randn(size(mpChanOut)) + 1j*randn(size(mpChanOut)));
-chanOut=mpChanOut+noise;
+    snr=SNR(i);
+    % Calculate noise power
+    snrLinear = 10^(snr/10);
+    noiseVarFreq = qamPower / snrLinear;
+    noiseVarTime = noiseVarFreq / numCarr;
+    %Generate complex AWGN
+    noise = sqrt(noiseVarTime/2) * (randn(size(mpChanOut)) + 1j*randn(size(mpChanOut)));
+    chanOut=mpChanOut+noise;
 
-rx = reshape(chanOut,numCarr+cycPrefLen,[]);
-rxNoCP = rx(cycPrefLen+1:end,:);
-fftModOut=fft(rxNoCP,numCarr,1);
-pilotRx =fftModOut(:,1);
-fftModOut=fftModOut(:,2:end);
-Hhat(:,i) = pilotRx ./ pilot;%存在信道估计误差
-MSE_H(i) = mean(abs(Hhat(:,i)-Htrue).^2);
+    rx = reshape(chanOut,numCarr+cycPrefLen,[]);
+    rxNoCP = rx(cycPrefLen+1:end,:);
+    fftModOut=fft(rxNoCP,numCarr,1);
+    pilotRx =fftModOut(:,1);
+    fftModOut=fftModOut(:,2:end);
+    Hhat(:,i) = pilotRx ./ pilot;%存在信道估计误差
+    MSE_H(i) = mean(abs(Hhat(:,i)-Htrue).^2);
 
-eqOut_ZF=fftModOut./Hhat(:,i);
-qamdeModOut_ZF=qamdemod(eqOut_ZF,modOrder,OutputType="bit");
-BER_ZF(i)=nnz(qamdeModOut_ZF(:)~=srcBits)/numBits;
+    eqOut_ZF=fftModOut./Hhat(:,i);
+    qamdeModOut_ZF=qamdemod(eqOut_ZF,modOrder,OutputType="bit");
+    BER_ZF(i)=nnz(qamdeModOut_ZF(:)~=srcBits)/numBits;
 
-noiseVarRatio=1/snrLinear ;
-mmseWeight = conj(Hhat(:,i)) ./ (abs(Hhat(:,i)).^2 + noiseVarRatio);
-eqOut_MMSE=fftModOut.*mmseWeight;
-qamdeModOut_MMSE=qamdemod(eqOut_MMSE,modOrder,OutputType="bit");
-BER_MMSE(i)=nnz(qamdeModOut_MMSE(:)~=srcBits)/numBits;
+    noiseVarRatio=1/snrLinear ;
+    mmseWeight = conj(Hhat(:,i)) ./ (abs(Hhat(:,i)).^2 + noiseVarRatio);
+    eqOut_MMSE=fftModOut.*mmseWeight;
+    qamdeModOut_MMSE=qamdemod(eqOut_MMSE,modOrder,OutputType="bit");
+    BER_MMSE(i)=nnz(qamdeModOut_MMSE(:)~=srcBits)/numBits;
 end
 hold on
 semilogy(SNR,BER_ZF,"o-r")%在 x 轴上使用线性刻度、在 y 轴上使用以 10 为底的对数刻度来绘制 x 和 y 坐标
@@ -77,7 +78,7 @@ ylabel("BER");
 title("OFDM BER Performance: ZF vs MMSE");
 hold off
 
-Htrue=fft(mpChan,numCarr);
+
 figure;
 plot(abs(Htrue),"o-r");
 hold on;
